@@ -3,7 +3,7 @@ using namespace std;
 
 void renderer::init(simulator *s)
 {
-  window = GetConsoleWindow (); 
+	window = GetConsoleWindow (); 
 	screen_dc = GetDC (window);
 	buffer_dc = CreateCompatibleDC(screen_dc);
 	GetClientRect(window, &screen_dim);
