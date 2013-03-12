@@ -17,7 +17,8 @@ private:
 	float angle;
 	float ang_vel;
 	void angcourecalc();
-	POINT centre;
+	POINT centre_g;
+	POINT centre_l;
 	void process();
 public:
 	pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
