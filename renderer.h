@@ -5,6 +5,7 @@
 #include <windowsx.h>  
 #include "simulator.h"
 #include "wincore.h"
+#include "pbody.h"
 
 #define BGCLR RGB(128, 128, 255)
 
@@ -21,25 +22,19 @@ private:
 	HBRUSH bgbrush;
 	HPEN bgpen;
 	simulator *sim;
-
+	POINT pnt[3];
+	int c;
+	pbody *pb;
+	void draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn);
+	pbody *tmp;
 public:
-	renderer() {};
+	renderer() {c = 0;};
 	void init(simulator *s);
-	void draw_triangle(POINT cnt[3], HBRUSH &brsh, HPEN &pn);
 	void Draw();
 	virtual ~renderer() {}
-	virtual LRESULT WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		switch (uMsg)
-		{
-		case WM_DESTROY:
-			//End the program when window is destroyed
-			::PostQuitMessage(0);
-			break;
-		}
-		//Use the default message handling for remaining messages
-		return WndProcDefault(uMsg, wParam, lParam);
-	}
+	LRESULT WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+	POINT mouse;
+	
 };
 
 #endif //REND_H

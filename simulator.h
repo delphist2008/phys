@@ -13,11 +13,13 @@ class simulator
 private:
 	vector<pbody*> bodies;
 	vector<pbody*>::iterator it;
+	vector<pbody*>::reverse_iterator bap;
 	renderer *rend;
-
+	pbody* BodyAtPos(int x, int y);
 public:
 	void process();
 	simulator(renderer * r);  
+	pbody* BAP;
 };
 
 #endif //SIM_H
