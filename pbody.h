@@ -25,6 +25,7 @@ private:
 	void draw();
 	void gcourecalc();
 	bool ishighlited;
+	unsigned long long lastupdated;
 public:
 	pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
 	void setAV(float av);

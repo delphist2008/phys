@@ -23,6 +23,7 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	bbbrush = GetStockBrush(HOLLOW_BRUSH);
 	bbpen = CreatePen(2, 1, RGB(0,0,0));
 	ishighlited = false;
+	lastupdated = GetTickCount();
 	sim->bodies.push_back(this);
 }
 
@@ -43,7 +44,8 @@ void pbody::draw()
 
 void pbody::process()
 {
-	angle += ang_vel;
+	angle += ang_vel*((GetTickCount() - lastupdated)/1000.0);
+	lastupdated = GetTickCount();
 	gcourecalc();
 }
 

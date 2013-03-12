@@ -50,7 +50,7 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				c = 0;
 				pb = new pbody(pnt, RGB(255,30,30), 2, sim);
-				pb->setAV(float(0.01*(rand()%8) - 0.01*(rand()%8)));
+				pb->setAV(3.14f);
 			}
 		}
 		break;
