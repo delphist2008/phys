@@ -8,6 +8,7 @@
 #include "pbody.h"
 
 #define BGCLR RGB(128, 128, 255)
+#define DRAWBOUNDING 1
 
 class renderer : public CWnd
 {
@@ -34,6 +35,8 @@ public:
 	virtual ~renderer() {}
 	LRESULT WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	POINT mouse;
+	POINT lmouse;
+	POINT omouse;
 	
 };
 

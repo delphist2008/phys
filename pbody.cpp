@@ -24,6 +24,13 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	bbpen = CreatePen(2, 1, RGB(0,0,0));
 	ishighlited = false;
 	lastupdated = GetTickCount();
+	double a, b, c;
+	mass = abs( ((l_countour[2].x-l_countour[1].x)*(l_countour[1].y-l_countour[0].y)-(l_countour[1].x-l_countour[0].x)*(l_countour[2].y-l_countour[1].y)) / 16000.0);
+	a = sqrt(pow((l_countour[0].x - l_countour[1].x), 2) + pow((l_countour[0].y - l_countour[1].y), 2));
+	b = sqrt(pow((l_countour[1].x - l_countour[2].x), 2) + pow((l_countour[1].y - l_countour[2].y), 2));
+	c = sqrt(pow((l_countour[2].x - l_countour[0].x), 2) + pow((l_countour[2].y - l_countour[0].y), 2));
+	I = (mass * ((b*b + ((b*b - a*a -c*c)/(2*a)) + pow(((b*b - a*a -c*c)/(2*a)), 2) + sqrt(b*b - pow(((b*b - a*a -c*c)/(2*a)), 2) ))))/18.0;
+	ang_accel = 0;
 	sim->bodies.push_back(this);
 }
 
@@ -31,16 +38,18 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 void pbody::draw()
 {
 	re->draw_triangle(g_countour, ishighlited ? &hlbrush : &pbrush, &ppen);
-	SelectBrush(re->buffer_dc, bbbrush);
-	SelectPen(re->buffer_dc, bbpen);
-	Rectangle(re->buffer_dc, bbox.left, bbox.top, bbox.right, bbox.bottom);
-	SetPixel(re->buffer_dc, centre_g.x, centre_g.y, 0);
-	SetPixel(re->buffer_dc, centre_g.x+1, centre_g.y, 0);
-	SetPixel(re->buffer_dc, centre_g.x-1, centre_g.y, 0);
-	SetPixel(re->buffer_dc, centre_g.x, centre_g.y+1, 0);
-	SetPixel(re->buffer_dc, centre_g.x, centre_g.y-1, 0);
+	if (DRAWBOUNDING)
+	{
+		SelectBrush(re->buffer_dc, bbbrush);
+		SelectPen(re->buffer_dc, bbpen);
+		Rectangle(re->buffer_dc, bbox.left, bbox.top, bbox.right, bbox.bottom);
+		SetPixel(re->buffer_dc, centre_g.x, centre_g.y, 0);
+		SetPixel(re->buffer_dc, centre_g.x+1, centre_g.y, 0);
+		SetPixel(re->buffer_dc, centre_g.x-1, centre_g.y, 0);
+		SetPixel(re->buffer_dc, centre_g.x, centre_g.y+1, 0);
+		SetPixel(re->buffer_dc, centre_g.x, centre_g.y-1, 0);
+	}
 }
-
 
 void pbody::process()
 {
@@ -79,3 +88,10 @@ void pbody::gcourecalc()
 	pol = CreatePolygonRgn(g_countour, 3, WINDING);
 }
 
+
+void pbody::addforce(POINT origin, POINT force)
+{
+	force_mom = (origin.x - centre_g.x)*force.y - (origin.y - centre_g.y)*force.x;
+	ang_accel = force_mom / I;
+	ang_vel += ang_accel;
+}

@@ -31,11 +31,19 @@ void renderer::Draw()
 	Rectangle(buffer_dc, 0, 0, screen_dim.right, screen_dim.bottom);
 	for (sim->it = sim->bodies.begin(); sim->it < sim->bodies.end(); sim->it++)
 		(*sim->it)->draw();
+	if (sim->state == RMBB)
+	{
+		SelectPen(buffer_dc, bgpen);
+		MoveToEx(buffer_dc, lmouse.x, lmouse.y, NULL);
+		LineTo(buffer_dc, mouse.x, mouse.y);
+	}
 	BitBlt(screen_dc, 0,0, screen_dim.right, screen_dim.bottom, buffer_dc, 0,0, SRCCOPY);
 }
 
+POINT frc;
 LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
 	switch (uMsg)
 	{
 	case WM_DESTROY:
@@ -50,7 +58,7 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				c = 0;
 				pb = new pbody(pnt, RGB(255,30,30), 2, sim);
-				pb->setAV(3.14f);
+				pb->setAV(0.0f);
 			}
 		}
 		break;
@@ -59,6 +67,34 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			mouse.x = GET_X_LPARAM(lParam);
 			mouse.y = GET_Y_LPARAM(lParam);
 		}
+		break;
+	case WM_RBUTTONDOWN:
+		{
+			if (sim->BAP)
+			{
+				sim->state = RMBB;
+				sim->OBAP = sim->BAP; 
+				sim->BAP->inangl = sim->BAP->angle;
+			}
+			else sim->state = RMBNB;
+			lmouse.x = GET_X_LPARAM(lParam);
+			lmouse.y = GET_Y_LPARAM(lParam);
+			omouse = lmouse;
+
+		}
+		break;
+	case WM_RBUTTONUP:
+		{
+			if (sim->state ==  RMBB) 
+			{
+				frc.x = mouse.x - lmouse.x;
+				frc.y = mouse.y - lmouse.y;
+				sim->OBAP->addforce(lmouse, frc );
+				sim->state = NONE;
+			}
+			break;
+		}
+	default:
+		return WndProcDefault(uMsg, wParam, lParam);
 	}
-	return WndProcDefault(uMsg, wParam, lParam);
 }

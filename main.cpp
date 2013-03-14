@@ -13,6 +13,7 @@ void __stdcall tmr(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 	rend.Draw();
 }
 
+
 int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
 	CWinApp MyApp;
@@ -22,4 +23,5 @@ int APIENTRY WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	return MyApp.Run();
 	KillTimer (rend.GetHwnd(), tmr1);
 }
+
 
