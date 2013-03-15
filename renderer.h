@@ -6,6 +6,7 @@
 #include "simulator.h"
 #include "wincore.h"
 #include "pbody.h"
+#include "ui.h"
 
 #define BGCLR RGB(128, 128, 255)
 #define DRAWBOUNDING 1
@@ -14,6 +15,7 @@ class renderer : public CWnd
 {
 	friend class simulator;
 	friend class pbody;
+	friend class ui;
 private:
 	CClientDC *screen;
 	CMemDC *buffer;
@@ -23,21 +25,15 @@ private:
 	HBRUSH bgbrush;
 	HPEN bgpen;
 	simulator *sim;
-	POINT pnt[3];
-	int c;
-	pbody *pb;
+	ui * UI;
 	void draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn);
-	pbody *tmp;
 public:
-	renderer() {c = 0;};
-	void init(simulator *s);
+	renderer() {};
+	void init(simulator *s, ui *u);
 	void Draw();
-	virtual ~renderer() {}
-	LRESULT WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-	POINT mouse;
-	POINT lmouse;
-	POINT omouse;
-	
+	virtual ~renderer() {};
+	virtual LRESULT WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
 #endif //REND_H
+

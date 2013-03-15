@@ -1,9 +1,10 @@
 #include "renderer.h"
 using namespace std;
 
-void renderer::init(simulator *s)
+void renderer::init(simulator *s, ui *u)
 {
-
+	sim = s;
+	UI = u;
 	screen = new CClientDC(FromHandle(m_hWnd));
 	buffer = new CMemDC(screen);
 	screen_dc = screen->GetHDC();
@@ -14,7 +15,6 @@ void renderer::init(simulator *s)
 	buffer->SetBkColor(BGCLR);
 	bgbrush = CreateSolidBrush(BGCLR);
 	bgpen =  GetStockPen(BLACK_PEN);
-	sim = s;
 }
 
 void renderer::draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn)
@@ -31,70 +31,44 @@ void renderer::Draw()
 	Rectangle(buffer_dc, 0, 0, screen_dim.right, screen_dim.bottom);
 	for (sim->it = sim->bodies.begin(); sim->it < sim->bodies.end(); sim->it++)
 		(*sim->it)->draw();
-	if (sim->state == RMBB)
+	if (UI->state == RMBB)
 	{
 		SelectPen(buffer_dc, bgpen);
-		MoveToEx(buffer_dc, lmouse.x, lmouse.y, NULL);
-		LineTo(buffer_dc, mouse.x, mouse.y);
+		MoveToEx(buffer_dc, UI->force_line_begin.x, UI->force_line_begin.y, NULL);
+		LineTo(buffer_dc, UI->mouse_pos.x, UI->mouse_pos.y);
 	}
 	BitBlt(screen_dc, 0,0, screen_dim.right, screen_dim.bottom, buffer_dc, 0,0, SRCCOPY);
 }
 
-POINT frc;
 LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-
 	switch (uMsg)
 	{
 	case WM_DESTROY:
 		::PostQuitMessage(0);
 		break;
 	case WM_LBUTTONDOWN:
-		{
-			pnt[c].x = GET_X_LPARAM(lParam);
-			pnt[c].y = GET_Y_LPARAM(lParam);
-			c++;
-			if (c == 3)
-			{
-				c = 0;
-				pb = new pbody(pnt, RGB(255,30,30), 2, sim);
-				pb->setAV(0.0f);
-			}
-		}
+		UI->click_pos.x = GET_X_LPARAM(lParam);
+		UI->click_pos.y = GET_Y_LPARAM(lParam);
+		UI->onLMBD();
+		break;
+	case WM_LBUTTONUP:
+		UI->onLMBU();
 		break;
 	case WM_MOUSEMOVE:
-		{
-			mouse.x = GET_X_LPARAM(lParam);
-			mouse.y = GET_Y_LPARAM(lParam);
-		}
+		UI->mouse_pos.x = GET_X_LPARAM(lParam);
+		UI->mouse_pos.y = GET_Y_LPARAM(lParam);
 		break;
 	case WM_RBUTTONDOWN:
-		{
-			if (sim->BAP)
-			{
-				sim->state = RMBB;
-				sim->OBAP = sim->BAP; 
-				sim->BAP->inangl = sim->BAP->angle;
-			}
-			else sim->state = RMBNB;
-			lmouse.x = GET_X_LPARAM(lParam);
-			lmouse.y = GET_Y_LPARAM(lParam);
-			omouse = lmouse;
-
-		}
+		UI->click_pos.x = GET_X_LPARAM(lParam);
+		UI->click_pos.y = GET_Y_LPARAM(lParam);
+		UI->onRMBD();
 		break;
 	case WM_RBUTTONUP:
-		{
-			if (sim->state ==  RMBB) 
-			{
-				frc.x = mouse.x - lmouse.x;
-				frc.y = mouse.y - lmouse.y;
-				sim->OBAP->addforce(lmouse, frc );
-				sim->state = NONE;
-			}
-			break;
-		}
+		UI->onRMBU();
+		break;
 	default:
 		return WndProcDefault(uMsg, wParam, lParam);
+		break;
 	}
 }

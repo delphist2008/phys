@@ -1,12 +1,12 @@
 #include "simulator.h"
 
-simulator::simulator(renderer * r)
+void simulator::init (renderer * r, ui * u)
 {
 	rend = r;
-	state = NONE;
+	UI = u;
+
 }
 
-int _X, _Y;
 void simulator::process()
 {
 	for (it = bodies.begin(); it < bodies.end(); it++)
@@ -14,13 +14,7 @@ void simulator::process()
 		(*it)->process();
 		(*it)->ishighlited = false;
 	}
-	BAP = BodyAtPos(rend->mouse.x, rend->mouse.y);
-	if (state == RMBB)
-	{	_X = (rend->omouse.x - OBAP->centre_g.x);
-		_Y = (rend->omouse.y - OBAP->centre_g.y);
-		rend->lmouse.x = _X*cos(OBAP->angle - OBAP->inangl) - _Y*sin(OBAP->angle - OBAP->inangl) + OBAP->centre_g.x;
-		rend->lmouse.y = _X*sin(OBAP->angle - OBAP->inangl) + _Y*cos(OBAP->angle - OBAP->inangl) + OBAP->centre_g.y;
-	}
+	UI->body_at_cursor = BodyAtPos(UI->mouse_pos.x, UI->mouse_pos.y);
 }
 
 pbody* simulator::BodyAtPos(int x, int y)

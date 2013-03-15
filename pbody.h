@@ -8,7 +8,10 @@ class pbody
 {
 	friend class simulator;
 	friend class renderer;
+	friend class ui;
 private:
+	int _x, _y;
+	int _k;
 	HBRUSH pbrush, bbbrush;		//standart brush; bounding box brush
 	HBRUSH hlbrush;				//on mouse hover brush
 	HPEN ppen, bbpen;			//standart pen; bounding box pen
@@ -24,16 +27,16 @@ private:
 	POINT centre_g;
 	POINT centre_l;
 	renderer *re;
-	void process();
-	void draw();
-	void gcourecalc();
 	bool ishighlited;
 	unsigned long long lastupdated;
 	double inangl;
+	HRGN pol;
+	void process();
+	void draw();
+	void gcourecalc();
+	void setAV(float av);
 public:
 	pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
-	void setAV(float av);
-	HRGN pol;
 	void addforce(POINT origin, POINT force);
 };
 

@@ -34,7 +34,6 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	sim->bodies.push_back(this);
 }
 
-
 void pbody::draw()
 {
 	re->draw_triangle(g_countour, ishighlited ? &hlbrush : &pbrush, &ppen);
@@ -63,9 +62,6 @@ void pbody::setAV(float av)
 	ang_vel = av;
 }
 
-
-int _x, _y;
-int _k;
 void pbody::gcourecalc()
 {
 	for (_k = 0; _k < 3; _k++)
@@ -87,7 +83,6 @@ void pbody::gcourecalc()
 	DeleteObject(pol);
 	pol = CreatePolygonRgn(g_countour, 3, WINDING);
 }
-
 
 void pbody::addforce(POINT origin, POINT force)
 {

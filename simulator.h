@@ -4,27 +4,25 @@
 #include "pbody.h"
 #include <vector>
 #include "renderer.h"
-#define RMBB 1
-#define RMBNB 3
-#define NONE 0
+#include "ui.h"
 using namespace std;
 
 class simulator
 {
 	friend class pbody;
 	friend class renderer;
+	friend class ui;
 private:
 	vector<pbody*> bodies;
 	vector<pbody*>::iterator it;
 	vector<pbody*>::reverse_iterator bap;
 	renderer *rend;
+	ui * UI;
 	pbody* BodyAtPos(int x, int y);
-	int state;
 public:
 	void process();
-	simulator(renderer * r);  
-	pbody* BAP;
-	pbody* OBAP;
+	void init (renderer * r, ui * u);
+	simulator() {};  
 };
 
 #endif //SIM_H
