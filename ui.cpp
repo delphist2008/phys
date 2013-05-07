@@ -43,9 +43,9 @@ void ui::onRMBU()
 {
 	if (state ==  RMBB) 
 	{
-		force_apply_vector.x = mouse_pos.x - force_line_begin.x;
-		force_apply_vector.y = mouse_pos.y - force_line_begin.y;
-		body_at_click->addforce(force_line_begin, force_apply_vector);
+		impulse_apply_vector.x = mouse_pos.x - impulse_line_begin.x;
+		impulse_apply_vector.y = mouse_pos.y - impulse_line_begin.y;
+		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector);
 		state = NONE;
 	}
 }
@@ -62,7 +62,7 @@ void ui::update()
 	{	
 		_X = (click_pos.x - body_at_click->centre_g.x);
 		_Y = (click_pos.y - body_at_click->centre_g.y);
-		force_line_begin.x = _X*cos(body_at_click->angle - body_at_click->inangl) - _Y*sin(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.x;
-		force_line_begin.y = _X*sin(body_at_click->angle - body_at_click->inangl) + _Y*cos(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.y;
+		impulse_line_begin.x = _X*cos(body_at_click->angle - body_at_click->inangl) - _Y*sin(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.x;
+		impulse_line_begin.y = _X*sin(body_at_click->angle - body_at_click->inangl) + _Y*cos(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.y;
 	}
 }

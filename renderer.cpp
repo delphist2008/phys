@@ -24,6 +24,11 @@ void renderer::draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn)
 	Polygon(buffer_dc, cnt, 3);
 }
 
+int _n;
+int XX, YY;
+float x, y;
+POINT frc;
+
 void renderer::Draw()
 {
 	SelectBrush(buffer_dc, bgbrush);
@@ -31,11 +36,24 @@ void renderer::Draw()
 	Rectangle(buffer_dc, 0, 0, screen_dim.right, screen_dim.bottom);
 	for (sim->it = sim->bodies.begin(); sim->it < sim->bodies.end(); sim->it++)
 		(*sim->it)->draw();
+
 	if (UI->state == RMBB)
 	{
 		SelectPen(buffer_dc, bgpen);
-		MoveToEx(buffer_dc, UI->force_line_begin.x, UI->force_line_begin.y, NULL);
+		MoveToEx(buffer_dc, UI->impulse_line_begin.x, UI->impulse_line_begin.y, NULL);
 		LineTo(buffer_dc, UI->mouse_pos.x, UI->mouse_pos.y);
+		frc.x = UI->mouse_pos.x - UI->impulse_line_begin.x;
+		frc.y = UI->mouse_pos.y - UI->impulse_line_begin.y;
+		for (_n = 0; _n < 3; _n++)
+			if (intersect(sim->UI->body_at_click->g_countour[_n], sim->UI->body_at_click-> g_countour[(_n+1) % 3], sim->UI->impulse_line_begin, sim->UI->mouse_pos))
+			{
+				YY = (sim->UI->body_at_click->g_countour[_n].x  - sim->UI->body_at_click->g_countour[(_n+1) % 3].x ) ;
+				XX = (sim->UI->body_at_click->g_countour[_n].y  - sim->UI->body_at_click->g_countour[(_n+1) % 3].y ) ;
+				break;
+			}
+		XX *= -1;
+		MoveToEx(buffer_dc, UI->impulse_line_begin.x, UI->impulse_line_begin.y, NULL);
+		LineTo(buffer_dc, UI->impulse_line_begin.x - XX, UI->impulse_line_begin.y - YY);		
 	}
 	BitBlt(screen_dc, 0,0, screen_dim.right, screen_dim.bottom, buffer_dc, 0,0, SRCCOPY);
 }
@@ -71,4 +89,4 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return WndProcDefault(uMsg, wParam, lParam);
 		break;
 	}
-}
+};

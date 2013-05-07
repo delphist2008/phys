@@ -5,7 +5,12 @@
 #include <vector>
 #include "renderer.h"
 #include "ui.h"
+#include "helper.h"
 using namespace std;
+
+
+
+
 
 class simulator
 {
@@ -19,6 +24,7 @@ private:
 	renderer *rend;
 	ui * UI;
 	pbody* BodyAtPos(int x, int y);
+	vector<POINT> penetration(vector<pbody*>::iterator b1, vector<pbody*>::iterator b2);
 public:
 	void process();
 	void init (renderer * r, ui * u);

@@ -31,3 +31,25 @@ pbody* simulator::BodyAtPos(int x, int y)
 	}
 	return NULL;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vector<POINT> simulator::penetration(vector<pbody*>::iterator b1, vector<pbody*>::iterator b2)
+{
+	vector <POINT> result;
+	return result;
+	
+}

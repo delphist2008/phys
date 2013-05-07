@@ -24,14 +24,15 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	bbpen = CreatePen(2, 1, RGB(0,0,0));
 	ishighlited = false;
 	lastupdated = GetTickCount();
-	double a, b, c;
-	mass = abs( ((l_countour[2].x-l_countour[1].x)*(l_countour[1].y-l_countour[0].y)-(l_countour[1].x-l_countour[0].x)*(l_countour[2].y-l_countour[1].y)) / 16000.0);
-	a = sqrt(pow((l_countour[0].x - l_countour[1].x), 2) + pow((l_countour[0].y - l_countour[1].y), 2));
-	b = sqrt(pow((l_countour[1].x - l_countour[2].x), 2) + pow((l_countour[1].y - l_countour[2].y), 2));
-	c = sqrt(pow((l_countour[2].x - l_countour[0].x), 2) + pow((l_countour[2].y - l_countour[0].y), 2));
-	I = (mass * ((b*b + ((b*b - a*a -c*c)/(2*a)) + pow(((b*b - a*a -c*c)/(2*a)), 2) + sqrt(b*b - pow(((b*b - a*a -c*c)/(2*a)), 2) ))))/18.0;
+	mass = abs( ((l_countour[2].x-l_countour[1].x)*(l_countour[1].y-l_countour[0].y)-(l_countour[1].x-l_countour[0].x)*(l_countour[2].y-l_countour[1].y)) / 160.0);
+	a = sqrt(pow((l_countour[0].x - l_countour[1].x),2) + pow((l_countour[0].y - l_countour[1].y),2));
+	b = sqrt(pow((l_countour[1].x - l_countour[2].x),2) + pow((l_countour[1].y - l_countour[2].y),2));
+	c = sqrt(pow((l_countour[2].x - l_countour[0].x),2) + pow((l_countour[2].y - l_countour[0].y),2));
+	I = double((mass * ((b*b + ((b*b - a*a -c*c)/(2*a)) + pow(((b*b - a*a -c*c)/(2*a)), 2) + sqrt(b*b - pow(((b*b - a*a -c*c)/(2*a)), 2) ))))/156000);
 	ang_accel = 0;
 	sim->bodies.push_back(this);
+	vel.x = 0;
+	vel.y = 0;
 }
 
 void pbody::draw()
@@ -53,8 +54,12 @@ void pbody::draw()
 void pbody::process()
 {
 	angle += ang_vel*((GetTickCount() - lastupdated)/1000.0);
+	centre_g.x += vel.x;
+	centre_g.y += vel.y;
 	lastupdated = GetTickCount();
 	gcourecalc();
+	impulse = sqrt(vel.x*vel.x + vel.y*vel.y) * mass;
+	impulse_moment = ang_vel * I;
 }
 
 void pbody::setAV(float av)
@@ -84,9 +89,17 @@ void pbody::gcourecalc()
 	pol = CreatePolygonRgn(g_countour, 3, WINDING);
 }
 
-void pbody::addforce(POINT origin, POINT force)
+
+void pbody::addimpulse(POINT origin, fpoint impulse)
 {
-	force_mom = (origin.x - centre_g.x)*force.y - (origin.y - centre_g.y)*force.x;
-	ang_accel = force_mom / I;
+	impulse_mom = (((origin.x - centre_g.x) / 100.0)*impulse.y - ((origin.y - centre_g.y)/100.0)*impulse.x);
+	ang_accel = -impulse_mom / I;
 	ang_vel += ang_accel;
+	v = sqrt(impulse.x*impulse.x + impulse.y*impulse.y)/mass;
+	divis = sqrt(impulse.x*impulse.x + impulse.y*impulse.y) / v;
+	maxvel.x = impulse.x / divis;
+	maxvel.y = impulse.y / divis;
+	v = (mass*(sqrt(maxvel.x*maxvel.x + maxvel.y*maxvel.y)) - I * abs(ang_accel)/mass);
+	vel.x -= impulse.x / v;
+	vel.y -= impulse.y / v;
 }

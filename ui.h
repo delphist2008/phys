@@ -4,6 +4,9 @@
 #include "renderer.h"
 #include "simulator.h"
 #include "pbody.h"
+#include "helper.h"
+
+
 
 #define RMBB 1
 #define RMBNB 3
@@ -31,12 +34,13 @@ public:
 	POINT pol_to_create[3];
 	POINT click_pos;
 	POINT mouse_pos;
-	POINT force_line_begin;
-	POINT force_apply_vector;
+	fpoint impulse_apply_vector;
+	POINT impulse_line_begin;
 	int click_count;
 	int _X, _Y;
 	void update();
 	int state;
+	
 };
 
 
