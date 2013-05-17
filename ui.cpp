@@ -1,25 +1,39 @@
 #include "ui.h"
 
-
 void ui::init(simulator * s, renderer * r)
 {
 	sim = s;
 	rend = r;
+	state = CREATE;
 }
 
 ui::ui()
 {
-	click_count = 0;
+	click_count = 0; 
 }
 
 void ui::onLMBD()
 {
-	pol_to_create[click_count] = click_pos;
-	click_count++;
-	if (click_count == 3)
+	if (state == SELECT)
 	{
-		click_count = 0;
-		newbody = new pbody(pol_to_create, RGB(255, 10, 0), 3, sim);
+		if (body_at_cursor )
+		{
+			body_at_click = sim->BodyAtPos(mouse_pos.x, mouse_pos.y);
+			state = MOVE;
+		}
+	}
+	else
+	if (state == MOVE) 
+		state = SELECT;
+	if (state == CREATE)
+	{
+		pol_to_create[click_count] = click_pos;
+		click_count++;
+		if (click_count == 3)
+		{
+			click_count = 0;
+			newbody = new pbody(pol_to_create, RGB(255, 10, 0), 3, sim);
+		}
 	}
 }
 
@@ -46,15 +60,35 @@ void ui::onRMBU()
 		impulse_apply_vector.x = mouse_pos.x - impulse_line_begin.x;
 		impulse_apply_vector.y = mouse_pos.y - impulse_line_begin.y;
 		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector);
-		state = NONE;
+		state = CREATE;
 	}
 }
 
 void ui::onMM()
 {
-
+	if (state == MOVE)
+	{
+		body_at_click->centre_g.x = mouse_pos.x;
+		body_at_click->centre_g.y = mouse_pos.y;
+	}
 
 }
+
+void ui::onKeyDown(int key)
+{
+	if (key == 77 ) 
+	{
+		if (state == SELECT)	
+			state = CREATE;
+		else state = SELECT;
+	}
+}
+
+void ui::onKeyUp(int key)
+{
+
+}
+
 
 void ui::update()
 {
@@ -65,4 +99,5 @@ void ui::update()
 		impulse_line_begin.x = _X*cos(body_at_click->angle - body_at_click->inangl) - _Y*sin(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.x;
 		impulse_line_begin.y = _X*sin(body_at_click->angle - body_at_click->inangl) + _Y*cos(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.y;
 	}
+	sprintf(debugstr, "state= %s x= %i y= %i\0", statelist[state], mouse_pos.x, mouse_pos.y);
 }

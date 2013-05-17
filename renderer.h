@@ -9,9 +9,8 @@
 #include "ui.h"
 #include "helper.h"
 
-
 #define BGCLR RGB(128, 128, 255)
-#define DRAWBOUNDING 0
+#define DRAWBOUNDING 1
 
 class renderer : public CWnd
 {

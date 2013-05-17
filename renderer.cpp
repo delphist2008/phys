@@ -51,10 +51,11 @@ void renderer::Draw()
 				XX = (sim->UI->body_at_click->g_countour[_n].y  - sim->UI->body_at_click->g_countour[(_n+1) % 3].y ) ;
 				break;
 			}
-		XX *= -1;
-		MoveToEx(buffer_dc, UI->impulse_line_begin.x, UI->impulse_line_begin.y, NULL);
-		LineTo(buffer_dc, UI->impulse_line_begin.x - XX, UI->impulse_line_begin.y - YY);		
+			XX *= -1;
+			MoveToEx(buffer_dc, UI->impulse_line_begin.x, UI->impulse_line_begin.y, NULL);
+			LineTo(buffer_dc, UI->impulse_line_begin.x - XX, UI->impulse_line_begin.y - YY);		
 	}
+	TextOutA(buffer_dc, 10,10,UI->debugstr, strlen(UI->debugstr));
 	BitBlt(screen_dc, 0,0, screen_dim.right, screen_dim.bottom, buffer_dc, 0,0, SRCCOPY);
 }
 
@@ -62,6 +63,12 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
+	case WM_KEYUP:
+		UI->onKeyUp(GET_WM_VKEYTOITEM_CODE(wParam, lParam));
+		break;
+	case WM_KEYDOWN:
+		UI->onKeyDown(GET_WM_VKEYTOITEM_CODE(wParam, lParam));
+		break;
 	case WM_DESTROY:
 		::PostQuitMessage(0);
 		break;
@@ -76,6 +83,7 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:
 		UI->mouse_pos.x = GET_X_LPARAM(lParam);
 		UI->mouse_pos.y = GET_Y_LPARAM(lParam);
+		UI->onMM();
 		break;
 	case WM_RBUTTONDOWN:
 		UI->click_pos.x = GET_X_LPARAM(lParam);

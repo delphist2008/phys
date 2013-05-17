@@ -6,11 +6,15 @@
 #include "pbody.h"
 #include "helper.h"
 
+#define RMBB 0
+#define CREATE 1
+#define RMBNB 2
+#define SELECT 3
+#define MOVE 4
+
+static char statelist[10][255] = {"RMBB\0","CREATE\0", "RMBNB\0", "SELECT\0", "MOVE\0"};
 
 
-#define RMBB 1
-#define RMBNB 3
-#define NONE 0
 
 class ui
 {
@@ -23,6 +27,8 @@ private:
 	void onRMBD();
 	void onRMBU();
 	void onMM();
+	void onKeyDown(int key);
+	void onKeyUp(int key);
 public:
 	void init(simulator * s, renderer * r);
 	simulator * sim;
@@ -40,7 +46,7 @@ public:
 	int _X, _Y;
 	void update();
 	int state;
-	
+	char debugstr[255];
 };
 
 
