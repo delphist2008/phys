@@ -17,11 +17,17 @@ void renderer::init(simulator *s, ui *u)
 	bgpen =  GetStockPen(BLACK_PEN);
 }
 
-void renderer::draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn)
+void renderer::draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce)
 {
 	SelectBrush(buffer_dc, *brsh);
 	SelectPen(buffer_dc, *pn);
 	Polygon(buffer_dc, cnt, 3);
+	if (ce) 
+	{
+		SelectPen(buffer_dc, *cp);
+		MoveToEx(buffer_dc, cnt[ce-1].x, cnt[ce-1].y, NULL);
+		LineTo(buffer_dc, cnt[ce%3].x, cnt[ce%3].y);
+	}
 }
 
 int _n;

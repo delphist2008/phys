@@ -20,6 +20,7 @@ class simulator
 private:
 	vector<pbody*> bodies;
 	vector<pbody*>::iterator it;
+	vector<pbody*>::iterator it2;
 	vector<pbody*>::reverse_iterator bap;
 	renderer *rend;
 	ui * UI;

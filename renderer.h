@@ -4,7 +4,7 @@
 #include <windows.h>   
 #include <windowsx.h>  
 #include "simulator.h"
-#include "wincore.h"
+#include "include\wincore.h"
 #include "pbody.h"
 #include "ui.h"
 #include "helper.h"
@@ -27,7 +27,7 @@ private:
 	HPEN bgpen;
 	simulator *sim;
 	ui * UI;
-	void draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn);
+	void draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce);
 public:
 	renderer() {};
 	void init(simulator *s, ui *u);

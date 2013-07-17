@@ -18,6 +18,8 @@ private:
 	HBRUSH pbrush, bbbrush;		//standart brush; bounding box brush
 	HBRUSH hlbrush;				//on mouse hover brush
 	HPEN ppen, bbpen;			//standart pen; bounding box pen
+	HPEN cpen;
+	HBRUSH cbrush;
 	POINT l_countour[3];
 	POINT g_countour[3];
 	RECT bbox;
@@ -43,10 +45,14 @@ private:
 	double impulse_moment;
 	double a, b, c;
 	float v, divis;
+	collision colis;
+	bool coll;
+	int col_edge;
 fpoint maxvel;
 public:
 	pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
 	void addimpulse(POINT origin, fpoint impulse);
+	void check_coll(pbody * body);
 };
 
 #endif // PBD_H

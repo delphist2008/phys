@@ -11,8 +11,16 @@ void simulator::process()
 {
 	for (it = bodies.begin(); it < bodies.end(); it++)
 	{
+		(*it)->coll = false;
+		(*it)->col_edge = 0;
+	}
+	for (it = bodies.begin(); it < bodies.end(); it++)
+	{
 		(*it)->process();
 		(*it)->ishighlited = false;
+		for (it2 = bodies.begin(); it2 < bodies.end(); it2++)
+			if (it != it2)
+				(*it)->check_coll(*it2);
 	}
 	UI->body_at_cursor = BodyAtPos(UI->mouse_pos.x, UI->mouse_pos.y);
 }

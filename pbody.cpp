@@ -4,7 +4,9 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 {
 	pbrush = CreateSolidBrush(pclr);
 	hlbrush = CreateSolidBrush(RGB(0,200,0));
+	cbrush = CreateSolidBrush(RGB(0,0,255));
 	ppen = CreatePen(0, cnt_wdth, 0);
+	cpen = CreatePen(0, cnt_wdth, RGB(0,255,0));
 	centre_g.x = (cnt[0].x+ cnt[1].x+ cnt[2].x)/3;
 	centre_g.y = (cnt[0].y+ cnt[1].y+ cnt[2].y)/3;
 	l_countour[1] = cnt[1];
@@ -33,11 +35,13 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	sim->bodies.push_back(this);
 	vel.x = 0;
 	vel.y = 0;
+	col_edge = 0;
+	coll = false;
 }
 
 void pbody::draw()
 {
-	re->draw_triangle(g_countour, ishighlited ? &hlbrush : &pbrush, &ppen);
+	re->draw_triangle(g_countour, coll ? & cbrush : (ishighlited ? &hlbrush : &pbrush), &ppen, &cpen, col_edge);
 	if (DRAWBOUNDING)
 	{
 		SelectBrush(re->buffer_dc, bbbrush);
@@ -100,6 +104,35 @@ void pbody::addimpulse(POINT origin, fpoint impulse)
 	maxvel.x = impulse.x / divis;
 	maxvel.y = impulse.y / divis;
 	v = (mass*(sqrt(maxvel.x*maxvel.x + maxvel.y*maxvel.y)) - I * abs(ang_accel)/mass);
-	vel.x -= impulse.x / v;
-	vel.y -= impulse.y / v;
+	//vel.x -= impulse.x / v;
+	//vel.y -= impulse.y / v;
 }
+
+int vcount;
+int x, y;
+void pbody::check_coll(pbody * body)
+{
+	for (vcount = 0; vcount < 3; vcount++)
+	{
+		x = this->g_countour[vcount].x;
+		y = this->g_countour[vcount].y;
+		if (x < (body->bbox.left) ||  x > (body->bbox.right) ||   y < (body->bbox.top)  || y > (body->bbox.bottom))
+			continue;
+		if (PtInRegion((body)->pol, x,y))
+		{
+			body->coll = true;
+			coll = true;
+			if (intersect(centre_g.x, centre_g.y, x, y, body->g_countour[0].x, body->g_countour[0].y, body->g_countour[1].x, body->g_countour[1].y))
+				body->col_edge = 1;
+			else if 
+				(intersect(centre_g.x, centre_g.y, x, y, body->g_countour[1].x, body->g_countour[1].y, body->g_countour[2].x, body->g_countour[2].y))
+				body->col_edge = 2;
+			else if 
+				(intersect(centre_g.x, centre_g.y, x, y, body->g_countour[2].x, body->g_countour[2].y, body->g_countour[0].x, body->g_countour[0].y))
+				body->col_edge = 3;
+			break;
+		}
+	}
+
+}
+
