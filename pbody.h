@@ -4,8 +4,6 @@
 #include "simulator.h"
 #include "helper.h"
 
-
-
 class pbody
 {
 	friend class simulator;

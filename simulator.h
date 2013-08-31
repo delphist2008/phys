@@ -8,10 +8,6 @@
 #include "helper.h"
 using namespace std;
 
-
-
-
-
 class simulator
 {
 	friend class pbody;

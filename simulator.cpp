@@ -50,11 +50,6 @@ pbody* simulator::BodyAtPos(int x, int y)
 
 
 
-
-
-
-
-
 vector<POINT> simulator::penetration(vector<pbody*>::iterator b1, vector<pbody*>::iterator b2)
 {
 	vector <POINT> result;

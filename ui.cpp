@@ -5,6 +5,7 @@ void ui::init(simulator * s, renderer * r)
 	sim = s;
 	rend = r;
 	state = CREATE;
+	vect = 0;
 }
 
 ui::ui()
@@ -20,6 +21,8 @@ void ui::onLMBD()
 		{
 			body_at_click = sim->BodyAtPos(mouse_pos.x, mouse_pos.y);
 			state = MOVE;
+			dx = mouse_pos.x - body_at_click->centre_g.x;
+			dy = mouse_pos.y - body_at_click->centre_g.y;
 		}
 	}
 	else
@@ -39,7 +42,7 @@ void ui::onLMBD()
 
 void ui::onLMBU()
 {
-
+	if (state == MOVE) state = SELECT;
 }
 
 void ui::onRMBD()
@@ -47,10 +50,11 @@ void ui::onRMBD()
 	if (body_at_cursor )
 	{
 		body_at_click = sim->BodyAtPos(mouse_pos.x, mouse_pos.y);
+		oldstate = state;
 		state = RMBB;
 		body_at_click->inangl = body_at_click->angle;
 	}
-	else state = RMBNB;
+	//else state = RMBNB;
 }
 
 void ui::onRMBU()
@@ -60,7 +64,7 @@ void ui::onRMBU()
 		impulse_apply_vector.x = mouse_pos.x - impulse_line_begin.x;
 		impulse_apply_vector.y = mouse_pos.y - impulse_line_begin.y;
 		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector);
-		state = CREATE;
+		state = oldstate;
 	}
 }
 
@@ -68,21 +72,25 @@ void ui::onMM()
 {
 	if (state == MOVE)
 	{
-		body_at_click->centre_g.x = mouse_pos.x;
-		body_at_click->centre_g.y = mouse_pos.y;
+		body_at_click->centre_g.x = mouse_pos.x -dx;
+		body_at_click->centre_g.y = mouse_pos.y -dy;
 	}
 
 }
 
 void ui::onKeyDown(int key)
 {
-	if (key == 77 ) 
-	{
+	if (key == 77 ) //m
 		if (state == SELECT)	
 			state = CREATE;
 		else state = SELECT;
+	if (key == 67 ) //c
+	{
+		state = CREATE;
+		sim->bodies.clear();
 	}
 }
+
 
 void ui::onKeyUp(int key)
 {
@@ -99,5 +107,5 @@ void ui::update()
 		impulse_line_begin.x = _X*cos(body_at_click->angle - body_at_click->inangl) - _Y*sin(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.x;
 		impulse_line_begin.y = _X*sin(body_at_click->angle - body_at_click->inangl) + _Y*cos(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.y;
 	}
-	sprintf(debugstr, "state= %s x= %i y= %i\0", statelist[state], mouse_pos.x, mouse_pos.y);
+	sprintf(debugstr, "state= %s x= %i y= %i vect= %i\0", statelist[state], mouse_pos.x, mouse_pos.y, vect);
 }

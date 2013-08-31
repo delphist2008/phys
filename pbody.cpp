@@ -1,5 +1,6 @@
 #include "pbody.h"
 
+
 pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 {
 	pbrush = CreateSolidBrush(pclr);
@@ -16,6 +17,8 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	l_countour[1].y -= cnt[0].y;
 	l_countour[2].x -= cnt[0].x;
 	l_countour[2].y -= cnt[0].y;
+	sim->UI->vect = (l_countour[1].x  -  l_countour[0].x )* (l_countour[2].y  -  l_countour[1].y ) - (l_countour[2].x  -  l_countour[1].x ) * (l_countour[1].y  -  l_countour[0].y );
+	if (sim->UI->vect >= 0) std::reverse(&(l_countour[0]), &(l_countour[2]));
 	centre_l.x = (l_countour[0].x+ l_countour[1].x+ l_countour[2].x)/3;
 	centre_l.y = (l_countour[0].y+ l_countour[1].y+ l_countour[2].y)/3;
 	gcourecalc();
@@ -37,11 +40,16 @@ pbody::pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	vel.y = 0;
 	col_edge = 0;
 	coll = false;
-}
+	}
 
 void pbody::draw()
 {
 	re->draw_triangle(g_countour, coll ? & cbrush : (ishighlited ? &hlbrush : &pbrush), &ppen, &cpen, col_edge);
+	if (coll)
+	{
+		MoveToEx(re->buffer_dc, colis.position.x, colis.position.y, NULL);
+		LineTo(re->buffer_dc, colis.position.x+colis.vector.x, colis.position.y+colis.vector.y);
+	}
 	if (DRAWBOUNDING)
 	{
 		SelectBrush(re->buffer_dc, bbbrush);
@@ -57,6 +65,8 @@ void pbody::draw()
 
 void pbody::process()
 {
+	if (bbox.bottom >= re->screen_dim.bottom || bbox.top <= re->screen_dim.top ) vel.y *= -1.0; 
+	if (bbox.right >= re->screen_dim.right || bbox.left <= re->screen_dim.left ) vel.x *= -1.0; 
 	angle += ang_vel*((GetTickCount() - lastupdated)/1000.0);
 	centre_g.x += vel.x;
 	centre_g.y += vel.y;
@@ -64,6 +74,7 @@ void pbody::process()
 	gcourecalc();
 	impulse = sqrt(vel.x*vel.x + vel.y*vel.y) * mass;
 	impulse_moment = ang_vel * I;
+	
 }
 
 void pbody::setAV(float av)
@@ -104,12 +115,16 @@ void pbody::addimpulse(POINT origin, fpoint impulse)
 	maxvel.x = impulse.x / divis;
 	maxvel.y = impulse.y / divis;
 	v = (mass*(sqrt(maxvel.x*maxvel.x + maxvel.y*maxvel.y)) - I * abs(ang_accel)/mass);
-	//vel.x -= impulse.x / v;
-	//vel.y -= impulse.y / v;
+	vel.x -= impulse.x / v;
+	vel.y -= impulse.y / v;
 }
 
 int vcount;
 int x, y;
+float len;
+float D;
+float _cx1, _cx2, _cy1, _cy2;
+
 void pbody::check_coll(pbody * body)
 {
 	for (vcount = 0; vcount < 3; vcount++)
@@ -120,19 +135,69 @@ void pbody::check_coll(pbody * body)
 			continue;
 		if (PtInRegion((body)->pol, x,y))
 		{
-			body->coll = true;
+			//body->coll = true;
 			coll = true;
+			colis.position.x = x;
+			colis.position.y = y;
 			if (intersect(centre_g.x, centre_g.y, x, y, body->g_countour[0].x, body->g_countour[0].y, body->g_countour[1].x, body->g_countour[1].y))
+			{
 				body->col_edge = 1;
-			else if 
+				colis.vector.y = -1.0*(body->g_countour[0].x -body->g_countour[1].x);
+				colis.vector.x = (body->g_countour[0].y -body->g_countour[1].y);
+
+				_cx1 = body->g_countour[0].x;
+				_cx2 = body->g_countour[1].x;
+
+				_cy1 = body->g_countour[0].y;
+				_cy2 = body->g_countour[1].y;
+				
+			}
+			else if
 				(intersect(centre_g.x, centre_g.y, x, y, body->g_countour[1].x, body->g_countour[1].y, body->g_countour[2].x, body->g_countour[2].y))
+			{
 				body->col_edge = 2;
-			else if 
+				colis.vector.y = -1.0*(body->g_countour[1].x -body->g_countour[2].x);
+				colis.vector.x = (body->g_countour[1].y -body->g_countour[2].y);
+
+				_cx1 = body->g_countour[1].x;
+				_cx2 = body->g_countour[2].x;
+
+				_cy1 = body->g_countour[1].y;
+				_cy2 = body->g_countour[2].y;
+			}
+			else  if
 				(intersect(centre_g.x, centre_g.y, x, y, body->g_countour[2].x, body->g_countour[2].y, body->g_countour[0].x, body->g_countour[0].y))
+			{
 				body->col_edge = 3;
+				colis.vector.y = -1.0*(body->g_countour[2].x -body->g_countour[0].x);
+				colis.vector.x = (body->g_countour[2].y -body->g_countour[0].y);
+
+				_cx1 = body->g_countour[2].x;
+				_cx2 = body->g_countour[0].x;
+
+				_cy1 = body->g_countour[2].y;
+				_cy2 = body->g_countour[0].y;
+			}
+			len = sqrt(colis.vector.x*colis.vector.x+colis.vector.y*colis.vector.y);
+			colis.vector.y /= len;
+			colis.vector.x /= len;
+			D = -((_cy1-_cy2)*x +(_cx2-_cx1)*y + (_cx1*_cy2 - _cx2*_cy1))/sqrt((_cx2-_cx1)*(_cx2-_cx1) + (_cy2-_cy1)*(_cy2-_cy1));
+			colis.vector.x *= D/2.0;
+			colis.vector.y *= D/2.0;
+
+			body->centre_g.x -= colis.vector.x;
+			body->centre_g.y -= colis.vector.y;
+			centre_g.x -= colis.vector.x;
+			centre_g.y -= colis.vector.y;
+			
+			colis.vector.x *= mass;
+			colis.vector.y *= mass;
+			body->addimpulse(colis.position, colis.vector);
+			colis.vector.x *= -1.0;
+			colis.vector.y *= -1.0;
+			addimpulse(colis.position, colis.vector);
 			break;
+
 		}
 	}
-
 }
-

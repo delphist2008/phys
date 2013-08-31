@@ -14,8 +14,6 @@
 
 static char statelist[10][255] = {"RMBB\0","CREATE\0", "RMBNB\0", "SELECT\0", "MOVE\0"};
 
-
-
 class ui
 {
 	friend class pbody;
@@ -47,6 +45,9 @@ public:
 	void update();
 	int state;
 	char debugstr[255];
+	int vect;
+	int oldstate;
+	int dx, dy;
 };
 
 
