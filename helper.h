@@ -11,12 +11,12 @@ struct fpoint
 	float x, y;
 };
 
-bool intersect (POINT  a, POINT  b, POINT  c, POINT  d) ;
-bool intersect (int  ax, int ay,  int  bx, int by, int cx, int cy, int dx, int dy);
+bool intersect (fpoint  a, fpoint  b, fpoint  c, fpoint  d) ;
+bool intersect (float  ax, float ay,  float  bx, float by, float cx, float cy, float dx, float dy);
 
 struct collision
 {
-	POINT position;
+	fpoint position;
 	fpoint vector;
 };
 

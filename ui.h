@@ -35,11 +35,11 @@ public:
 	pbody* body_at_click;
 	pbody* body_at_cursor;
 	pbody* newbody;
-	POINT pol_to_create[3];
-	POINT click_pos;
-	POINT mouse_pos;
+	fpoint pol_to_create[3];
+	fpoint click_pos;
+	fpoint mouse_pos;
 	fpoint impulse_apply_vector;
-	POINT impulse_line_begin;
+	fpoint impulse_line_begin;
 	int click_count;
 	int _X, _Y;
 	void update();

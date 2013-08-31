@@ -17,11 +17,18 @@ void renderer::init(simulator *s, ui *u)
 	bgpen =  GetStockPen(BLACK_PEN);
 }
 
-void renderer::draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce)
+POINT cntt[3];
+void renderer::draw_triangle(fpoint cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce)
 {
 	SelectBrush(buffer_dc, *brsh);
 	SelectPen(buffer_dc, *pn);
-	Polygon(buffer_dc, cnt, 3);
+	cntt[0].x = cnt[0].x;
+	cntt[0].y = cnt[0].y;
+	cntt[1].x = cnt[1].x;
+	cntt[1].y = cnt[1].y;
+	cntt[2].x = cnt[2].x;
+	cntt[2].y = cnt[2].y;
+	Polygon(buffer_dc, cntt, 3);
 	if (ce) 
 	{
 		SelectPen(buffer_dc, *cp);
@@ -79,21 +86,21 @@ LRESULT renderer::WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		::PostQuitMessage(0);
 		break;
 	case WM_LBUTTONDOWN:
-		UI->click_pos.x = GET_X_LPARAM(lParam);
-		UI->click_pos.y = GET_Y_LPARAM(lParam);
+		UI->click_pos.x = (int)GET_X_LPARAM(lParam);
+		UI->click_pos.y = (int)GET_Y_LPARAM(lParam);
 		UI->onLMBD();
 		break;
 	case WM_LBUTTONUP:
 		UI->onLMBU();
 		break;
 	case WM_MOUSEMOVE:
-		UI->mouse_pos.x = GET_X_LPARAM(lParam);
-		UI->mouse_pos.y = GET_Y_LPARAM(lParam);
+		UI->mouse_pos.x = (int)GET_X_LPARAM(lParam);
+		UI->mouse_pos.y = (int)GET_Y_LPARAM(lParam);
 		UI->onMM();
 		break;
 	case WM_RBUTTONDOWN:
-		UI->click_pos.x = GET_X_LPARAM(lParam);
-		UI->click_pos.y = GET_Y_LPARAM(lParam);
+		UI->click_pos.x = (int)GET_X_LPARAM(lParam);
+		UI->click_pos.y = (int)GET_Y_LPARAM(lParam);
 		UI->onRMBD();
 		break;
 	case WM_RBUTTONUP:

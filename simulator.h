@@ -20,7 +20,7 @@ private:
 	vector<pbody*>::reverse_iterator bap;
 	renderer *rend;
 	ui * UI;
-	pbody* BodyAtPos(int x, int y);
+	pbody* BodyAtPos(float x, float y);
 	vector<POINT> penetration(vector<pbody*>::iterator b1, vector<pbody*>::iterator b2);
 public:
 	void process();

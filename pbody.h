@@ -18,8 +18,9 @@ private:
 	HPEN ppen, bbpen;			//standart pen; bounding box pen
 	HPEN cpen;
 	HBRUSH cbrush;
-	POINT l_countour[3];
-	POINT g_countour[3];
+	fpoint l_countour[3];
+	fpoint g_countour[3];
+	POINT t_cont[3];
 	RECT bbox;
 	double angle;
 	double ang_vel;
@@ -46,10 +47,11 @@ private:
 	collision colis;
 	bool coll;
 	int col_edge;
+	fpoint ivel[3];
 fpoint maxvel;
 public:
-	pbody(POINT cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
-	void addimpulse(POINT origin, fpoint impulse);
+	pbody(fpoint cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
+	void addimpulse(fpoint origin, fpoint normal, float impulse);
 	void check_coll(pbody * body);
 };
 

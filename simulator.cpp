@@ -16,22 +16,22 @@ void simulator::process()
 	}
 	for (it = bodies.begin(); it < bodies.end(); it++)
 	{
-		(*it)->process();
 		(*it)->ishighlited = false;
 		for (it2 = bodies.begin(); it2 < bodies.end(); it2++)
 			if (it != it2)
 				(*it)->check_coll(*it2);
+		(*it)->process();
 	}
-	UI->body_at_cursor = BodyAtPos(UI->mouse_pos.x, UI->mouse_pos.y);
+	UI->body_at_cursor = BodyAtPos((UI->mouse_pos.x), (UI->mouse_pos.y));
 }
 
-pbody* simulator::BodyAtPos(int x, int y)
+pbody* simulator::BodyAtPos(float x, float y)
 {
 	for (bap = bodies.rbegin(); bap < bodies.rend(); bap++)
 	{
 		if (x < ((*bap)->bbox.left) ||  x > ((*bap)->bbox.right) ||   y < ((*bap)->bbox.top)  || y > ((*bap)->bbox.bottom))
 			continue;
-		if (PtInRegion((*bap)->pol, x,y))
+		if (PtInRegion((*bap)->pol, int(x*100.0),int(y*100.0)))
 		{
 			(*bap)->ishighlited = true;
 			return (*bap);

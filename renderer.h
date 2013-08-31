@@ -27,7 +27,7 @@ private:
 	HPEN bgpen;
 	simulator *sim;
 	ui * UI;
-	void draw_triangle(POINT cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce);
+	void draw_triangle(fpoint cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce);
 public:
 	renderer() {};
 	void init(simulator *s, ui *u);

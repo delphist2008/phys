@@ -56,14 +56,18 @@ void ui::onRMBD()
 	}
 	//else state = RMBNB;
 }
-
+float im;
 void ui::onRMBU()
 {
 	if (state ==  RMBB) 
 	{
-		impulse_apply_vector.x = mouse_pos.x - impulse_line_begin.x;
-		impulse_apply_vector.y = mouse_pos.y - impulse_line_begin.y;
-		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector);
+		
+		impulse_apply_vector.x = -mouse_pos.x + impulse_line_begin.x;
+		impulse_apply_vector.y = -mouse_pos.y + impulse_line_begin.y;
+		im = sqrt(impulse_apply_vector.x * impulse_apply_vector.x + impulse_apply_vector.y*impulse_apply_vector.y );
+		impulse_apply_vector.x /= im;
+		impulse_apply_vector.y /= im;
+		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector, im);
 		state = oldstate;
 	}
 }
@@ -107,5 +111,5 @@ void ui::update()
 		impulse_line_begin.x = _X*cos(body_at_click->angle - body_at_click->inangl) - _Y*sin(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.x;
 		impulse_line_begin.y = _X*sin(body_at_click->angle - body_at_click->inangl) + _Y*cos(body_at_click->angle - body_at_click->inangl) + body_at_click->centre_g.y;
 	}
-	sprintf(debugstr, "state= %s x= %i y= %i vect= %i\0", statelist[state], mouse_pos.x, mouse_pos.y, vect);
+	sprintf(debugstr, "state= %s x= %f y= %f vect= %i\0", statelist[state], mouse_pos.x, mouse_pos.y, vect);
 }

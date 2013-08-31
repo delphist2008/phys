@@ -1,24 +1,24 @@
 #include "helper.h"
 
 
-long long  area (POINT a, POINT  b, POINT  c) 
+long long  area (fpoint a, fpoint  b, fpoint  c) 
 {
 	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 }
 
-long long  area (int ax, int ay, int bx, int by, int cx, int cy) 
+long long  area (float ax, float ay, float bx, float by, float cx, float cy) 
 {
 	return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
 }
 
-bool intersect_1 (int a, int b, int c, int d) 
+bool intersect_1 (float a, float b, float c, float d) 
 {
 	if (a > b)  swap (a, b);
 	if (c > d)  swap (c, d);
 	return max(a,c) <= min(b,d);
 }
 
-bool intersect (POINT  a, POINT  b, POINT  c, POINT  d) 
+bool intersect (fpoint  a, fpoint  b, fpoint  c, fpoint  d)  
 {
 	return intersect_1 (a.x, b.x, c.x, d.x)
 		&& intersect_1 (a.y, b.y, c.y, d.y)
@@ -27,7 +27,7 @@ bool intersect (POINT  a, POINT  b, POINT  c, POINT  d)
 }
 
 
-bool intersect (int  ax, int ay,  int  bx, int by, int cx, int cy, int dx, int dy)
+bool intersect (float  ax, float ay,  float  bx, float by, float cx, float cy, float dx, float dy)
 {
 	return intersect_1 (ax, bx, cx, dx)
 		&& intersect_1 (ay, by, cy, dy)
