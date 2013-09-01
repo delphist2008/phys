@@ -67,7 +67,7 @@ void ui::onRMBU()
 		im = sqrt(impulse_apply_vector.x * impulse_apply_vector.x + impulse_apply_vector.y*impulse_apply_vector.y );
 		impulse_apply_vector.x /= im;
 		impulse_apply_vector.y /= im;
-		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector, im);
+		body_at_click->addimpulse(impulse_line_begin, impulse_apply_vector, im*3000.0);
 		state = oldstate;
 	}
 }
