@@ -15,6 +15,7 @@ void renderer::init(simulator *s, ui *u)
 	buffer->SetBkColor(BGCLR);
 	bgbrush = CreateSolidBrush(BGCLR);
 	bgpen =  GetStockPen(BLACK_PEN);
+
 }
 
 POINT cntt[3];
@@ -47,7 +48,7 @@ void renderer::Draw()
 	SelectBrush(buffer_dc, bgbrush);
 	SelectPen(buffer_dc, bgpen);
 	Rectangle(buffer_dc, 0, 0, screen_dim.right, screen_dim.bottom);
-	for (sim->it = sim->bodies.begin(); sim->it < sim->bodies.end(); sim->it++)
+	for (sim->it = sim->bodies.begin(); sim->it < sim->bodies.end(); ++sim->it)
 		(*sim->it)->draw();
 
 	if (UI->state == RMBB)

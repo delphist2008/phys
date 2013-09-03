@@ -43,10 +43,17 @@ pbody::pbody(fpoint cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim)
 	if (re->UI->state == STATIC) isstatic = true; 
 	else
 		isstatic = false;
+	angvel_temp = 0;
+	vel_temp.x = 0;
+	vel_temp.y = 0;
+	pos_temp.x = 0;
+	pos_temp.y = 0;
 }
 
 void pbody::draw()
 {
+	// todo: move all drawing stuff into rendererer
+
 	re->draw_triangle(g_countour, coll ? & cbrush : isstatic ? &stbrush : (ishighlited ? &hlbrush : &pbrush), &ppen, &cpen, col_edge);
 	if (coll)
 	{
@@ -66,13 +73,26 @@ void pbody::draw()
 	}
 }
 
+double tk;
 void pbody::process()
 {
-	angle += ang_vel*((GetTickCount() - lastupdated)/1000.0);
-	centre_g.x += vel.x*((GetTickCount() - lastupdated)/1000.0);
-	centre_g.y += vel.y*((GetTickCount() - lastupdated)/1000.0);
-	gcourecalc();
+	centre_g.x += pos_temp.x;
+	centre_g.y += pos_temp.y;
+	vel.x += vel_temp.x;
+	vel.y += vel_temp.y;
+	ang_vel += angvel_temp;
+	tk = ((GetTickCount() - lastupdated)/10000.0);
 	lastupdated = GetTickCount();
+	angle += ang_vel*tk;
+	centre_g.x += vel.x*tk;
+	centre_g.y += vel.y*tk;
+	gcourecalc();
+	angvel_temp = 0;
+	vel_temp.x = 0;
+	vel_temp.y = 0;
+	pos_temp.x = 0;
+	pos_temp.y = 0;
+
 }
 
 void pbody::gcourecalc()
@@ -81,8 +101,8 @@ void pbody::gcourecalc()
 	{
 		_x =  l_countour[_k].x - centre_l.x ;
 		_y =  l_countour[_k].y - centre_l.y;
-		g_countour[_k].x = long(_x*cos(angle) - _y*sin(angle) + centre_g.x);
-		g_countour[_k].y = long(_x*sin(angle) + _y*cos(angle) + centre_g.y);
+		g_countour[_k].x = float(_x*cos(angle) - _y*sin(angle) + centre_g.x);
+		g_countour[_k].y = float(_x*sin(angle) + _y*cos(angle) + centre_g.y);
 	}
 	bbox.left = bbox.right =  g_countour[0].x;
 	bbox.top = bbox.bottom =  g_countour[0].y;
@@ -95,12 +115,12 @@ void pbody::gcourecalc()
 	}
 	DeleteObject(pol);
 
-	t_cont[0].x = g_countour[0].x * 100.0f;
-	t_cont[0].y = g_countour[0].y * 100.0f;
-	t_cont[1].x = g_countour[1].x * 100.0f;
-	t_cont[1].y = g_countour[1].y * 100.0f;
-	t_cont[2].x = g_countour[2].x * 100.0f;
-	t_cont[2].y = g_countour[2].y * 100.0f;
+	t_cont[0].x = g_countour[0].x *100.0;
+	t_cont[0].y = g_countour[0].y *100.0;
+	t_cont[1].x = g_countour[1].x *100.0;
+	t_cont[1].y = g_countour[1].y *100.0;
+	t_cont[2].x = g_countour[2].x *100.0;
+	t_cont[2].y = g_countour[2].y *100.0;
 
 	pol = CreatePolygonRgn(t_cont, 3, WINDING);
 }
@@ -113,10 +133,10 @@ void pbody::addimpulse(fpoint origin, fpoint normal, float impulse)
 		RA.x  = origin.x - centre_g.x;
 		RA.y =  origin.y - centre_g.y;
 
-		vel.x += impulse * normal.x / mass;
-		vel.y += impulse * normal.y / mass;
+		vel_temp.x += impulse * normal.x / mass;
+		vel_temp.y += impulse * normal.y / mass;
 
-		ang_vel += (impulse * (normal.y * RA.x - normal.x * RA.y) /I);
+		angvel_temp += (impulse * (normal.y * RA.x - normal.x * RA.y) /I);
 	}
 }
 
@@ -147,14 +167,13 @@ void pbody::check_coll(pbody * body)
 			continue;
 		if (PtInRegion((body)->pol, int(x_*100.0),int(y_*100.0)))
 		{
-
 			colis.position.x = x_;
 			colis.position.y = y_;
 			for (vc = 0; vc < 3; vc++)
 			{
 				if (intersect(centre_g.x, centre_g.y, x_, y_, body->g_countour[vc].x, body->g_countour[vc].y, body->g_countour[(vc+1)%3].x, body->g_countour[(vc+1)%3].y))
 				{
-					body->col_edge = vc+1;
+					//body->col_edge = vc+1;
 					colis.vector.y = -1.0*(body->g_countour[vc].x -body->g_countour[(vc+1)%3].x);
 					colis.vector.x = (body->g_countour[vc].y -body->g_countour[(vc+1)%3].y);
 					_cx1 = body->g_countour[vc].x;
@@ -189,7 +208,7 @@ void pbody::check_coll(pbody * body)
 					+ colis.vector.y * (colis.vector.y /m1->mass + R1.x * Z1 /m1->I
 					+ colis.vector.y /m2->mass - R2.x * Z2 /m2->I);
 
-				impulse = (-(1.0 + (body->isstatic || isstatic)? 0.3 : 0.5) * vab) / J;
+				impulse = (-(1.0 + ((body->isstatic || isstatic)? -0.3 : 0.5)) * vab) / J;
 
 				if (impulse >= 0)
 				{
@@ -198,15 +217,14 @@ void pbody::check_coll(pbody * body)
 				}
 				if (!body->isstatic)
 				{
-					body->centre_g.x -= colis.vector.x;
-					body->centre_g.y -= colis.vector.y;
+					body->pos_temp.x -= colis.vector.x;
+					body->pos_temp.y -= colis.vector.y;
 				}
 				if (!isstatic)
 				{
-					centre_g.x += colis.vector.x;
-					centre_g.y += colis.vector.y;
+					pos_temp.x += colis.vector.x;
+					pos_temp.y += colis.vector.y;
 				}
-				break;
 			}
 		}
 	}

@@ -46,6 +46,9 @@ public:
 	pbody(fpoint cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
 	void addimpulse(fpoint origin, fpoint normal, float impulse);
 	void check_coll(pbody * body);
+	fpoint vel_temp;
+	fpoint pos_temp;
+	float angvel_temp;
 };
 
 #endif // PBD_H

@@ -1,11 +1,11 @@
 #include "helper.h"
 
-long long  area (fpoint a, fpoint  b, fpoint  c) 
+double  area (fpoint a, fpoint  b, fpoint  c) 
 {
 	return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 }
 
-long long  area (float ax, float ay, float bx, float by, float cx, float cy) 
+double  area (float ax, float ay, float bx, float by, float cx, float cy) 
 {
 	return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
 }
