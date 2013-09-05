@@ -3,6 +3,7 @@
 #include "renderer.h"
 #include "simulator.h"
 #include "helper.h"
+#include "vec2d.h"
 
 class pbody
 {
@@ -12,43 +13,40 @@ class pbody
 private:
 	int _x, _y;
 	int _k;
-	HBRUSH pbrush, bbbrush;		//standart brush; bounding box brush
-	HBRUSH hlbrush, stbrush;				//on mouse hover brush
-	HPEN ppen, bbpen;			//standart pen; bounding box pen
+	HBRUSH pbrush, bbbrush;		
+	HBRUSH hlbrush, stbrush;
+	HPEN ppen, bbpen;		
 	HPEN cpen;
 	HBRUSH cbrush;
-	fpoint l_countour[3];
-	fpoint g_countour[3];
-	POINT t_cont[3];
+	vec2 l_countour[3];
+	vec2 g_countour[3];
 	RECT bbox;
 	double angle;
 	double ang_vel;
-	double ang_accel;
 	double mass;
 	double I;
-	fpoint centre_g;
-	POINT centre_l;
+	vec2 centre_g;
+	vec2 centre_l;
 	renderer *re;
 	bool ishighlited;
 	unsigned long long lastupdated;
 	double inangl;
-	HRGN pol;
 	void process();
 	void draw();
 	void gcourecalc();
-	fpoint vel;
-	double impulse;
+	vec2 vel;
 	collision colis;
 	bool coll;
 	int col_edge;
 	bool isstatic;
 public:
-	pbody(fpoint cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
-	void addimpulse(fpoint origin, fpoint normal, float impulse);
+	pbody(vec2 cnt[3], COLORREF pclr, int cnt_wdth, simulator *sim);
+	void addimpulse(vec2 origin, vec2 normal, float impulse);
 	void check_coll(pbody * body);
-	fpoint vel_temp;
-	fpoint pos_temp;
+	vec2 vel_temp;
+	vec2 pos_temp;
 	float angvel_temp;
+	float calcI();
 };
 
 #endif // PBD_H

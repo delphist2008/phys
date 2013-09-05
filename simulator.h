@@ -6,6 +6,7 @@
 #include "renderer.h"
 #include "ui.h"
 #include "helper.h"
+#include "vec2d.h"
 using namespace std;
 
 class simulator
@@ -20,9 +21,9 @@ private:
 	vector<pbody*>::reverse_iterator bap;
 	renderer *rend;
 	ui * UI;
-	pbody* BodyAtPos(float x, float y);
-	vector<POINT> penetration(vector<pbody*>::iterator b1, vector<pbody*>::iterator b2);
-	fpoint grav;
+	pbody* BodyAtPos(vec2 p);
+	vec2 grav;
+	float energy;
 public:
 	void process();
 	void init (renderer * r, ui * u);

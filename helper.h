@@ -5,20 +5,16 @@
 using namespace std;
 #include <windows.h>   
 #include <windowsx.h>
+#include "vec2d.h"
 
-struct fpoint
-{
-	float x, y;
-};
-
-bool intersect (fpoint  a, fpoint  b, fpoint  c, fpoint  d) ;
+bool intersect (vec2  a, vec2  b, vec2  c, vec2  d) ;
 bool intersect (float  ax, float ay,  float  bx, float by, float cx, float cy, float dx, float dy);
+bool pit(vec2 a, vec2 b, vec2 c, vec2 point);
 
 struct collision
 {
-	fpoint position;
-	fpoint vector;
+	vec2 position;
+	vec2 vector;
 };
-
 
 #endif //HELP_H

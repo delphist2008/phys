@@ -4,12 +4,12 @@ void simulator::init (renderer * r, ui * u)
 {
 	rend = r;
 	UI = u;
-	grav.x = 0.0;
-	grav.y = 1.0;
+	grav = vec2(0,1);
 }
 
 void simulator::process()
 {
+	energy = 0;
 	for (it = bodies.begin(); it < bodies.end(); ++it)
 	{
 		(*it)->coll = false;
@@ -26,28 +26,23 @@ void simulator::process()
 	for (it = bodies.begin(); it < bodies.end(); ++it)
 	{
 		(*it)->process();
+		energy += (*it)->vel.length()*(*it)->vel.length() * (*it)->mass;
+		energy += (*it)->ang_vel*(*it)->ang_vel * (*it)->I;
 	}
-	UI->body_at_cursor = BodyAtPos((UI->mouse_pos.x), (UI->mouse_pos.y));
+	UI->body_at_cursor = BodyAtPos(UI->mouse_pos);
 }
 
-pbody* simulator::BodyAtPos(float x, float y)
+pbody* simulator::BodyAtPos(vec2 p)
 {
 	for (bap = bodies.rbegin(); bap < bodies.rend(); ++bap)
 	{
-		if (x < ((*bap)->bbox.left) ||  x > ((*bap)->bbox.right) ||   y < ((*bap)->bbox.top)  || y > ((*bap)->bbox.bottom))
+		if (p.x < ((*bap)->bbox.left) ||  p.x > ((*bap)->bbox.right) ||  p.y < ((*bap)->bbox.top)  || p.y > ((*bap)->bbox.bottom))
 			continue;
-		if (PtInRegion((*bap)->pol, int((x)*100.0),int((y)*100.0)))
+		if (pit((*bap)->g_countour[0], (*bap)->g_countour[1], (*bap)->g_countour[2], p))
 		{
 			(*bap)->ishighlited = true;
 			return (*bap);
 		}
 	}
 	return NULL;
-}
-
-vector<POINT> simulator::penetration(vector<pbody*>::iterator b1, vector<pbody*>::iterator b2)
-{
-	vector <POINT> result;
-	return result;
-
 }

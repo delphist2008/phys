@@ -15,11 +15,9 @@ void renderer::init(simulator *s, ui *u)
 	buffer->SetBkColor(BGCLR);
 	bgbrush = CreateSolidBrush(BGCLR);
 	bgpen =  GetStockPen(BLACK_PEN);
-
 }
 
-POINT cntt[3];
-void renderer::draw_triangle(fpoint cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce)
+void renderer::draw_triangle(vec2 cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce)
 {
 	SelectBrush(buffer_dc, *brsh);
 	SelectPen(buffer_dc, *pn);

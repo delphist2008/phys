@@ -10,7 +10,7 @@
 #include "helper.h"
 
 #define BGCLR RGB(128, 128, 255)
-#define DRAWBOUNDING 1
+#define DRAWBOUNDING 0
 
 class renderer : public CWnd
 {
@@ -27,7 +27,8 @@ private:
 	HPEN bgpen;
 	simulator *sim;
 	ui * UI;
-	void draw_triangle(fpoint cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce);
+	void draw_triangle(vec2 cnt[3], HBRUSH *brsh, HPEN *pn, HPEN *cp, int ce);
+	POINT cntt[3];
 public:
 	renderer() {};
 	void init(simulator *s, ui *u);
@@ -37,4 +38,3 @@ public:
 };
 
 #endif //REND_H
-
